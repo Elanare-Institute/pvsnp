@@ -1,0 +1,13 @@
+name = "directionalasymmetry"
+defaultTargets = ["DirectionalAsymmetry", "Test"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.33.1"
+
+[[lean_lib]]
+name = "DirectionalAsymmetry"
+
+[[lean_lib]]
+name = "Test"
