@@ -71,6 +71,7 @@ Besides the formalization itself, `lake build` runs the `sorry` and axiom audits
 | §6.5 | Theorem 3: in the restricted settings the bridge is a theorem | `bridge_resolution` (proved uniformly in `ProofKind`, so it covers both DPLL-style and clause-learning settings) |
 | §6.5 | Theorem 4(i) (Haken 1985) | `HakenLB` (a hypothesis, not an axiom) |
 | §6.5 | Corollary 3: no DPLL-style or clause-learning solver is a polynomial-time total candidate solver | `no_polytime_res_solver` |
+| §6.5 | In the restricted settings Conjecture A′ itself becomes a theorem | `conjA_restricted_holds` (with `ConjA_restricted`, the restricted form of `ConjA` with `structAsym` in place of the opaque `residualAsym`) |
 | §6.5 | Soundness of resolution refutations (so the definitions are not vacuous) | `tree_sound`, `gen_sound` |
 
 ## Not formalized

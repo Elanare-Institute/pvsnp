@@ -71,6 +71,7 @@ lake build
 | §6.5 | 定理3（制限された設定では「橋」が定理になる） | `bridge_resolution`（`ProofKind` に多相なので DPLL 型・節学習型の両方を覆う） |
 | §6.5 | 定理4(i)（Haken 1985） | `HakenLB`（公理ではなく仮定） |
 | §6.5 | 系3（DPLL型・節学習型は多項式時間の全候補ソルバーになれない） | `no_polytime_res_solver` |
+| §6.5 | 制限された設定では予想A′自体が定理になる | `conjA_restricted_holds`（`ConjA_restricted` は `ConjA` の opaque な `residualAsym` を `structAsym` に置き換えた版） |
 | §6.5 | resolution 反証の健全性（定義が空虚でないことの確認） | `tree_sound`, `gen_sound` |
 
 ## 形式化していないもの
