@@ -44,7 +44,12 @@ def auditTargets : List Name :=
    ``Prog.run_sound, ``Prog.Eval.deterministic, ``Prog.Eval.size_le,
    ``p_sub_np, ``inP_of_reduces,
    -- Layer 2
-   ``accumulation_identity, ``structuralAsymmetry_eq_log_prod]
+   ``accumulation_identity, ``structuralAsymmetry_eq_log_prod,
+   -- v4: 制限された設定（論文 §6.5）
+   ``tree_sound, ``gen_sound, ``tree_to_gen,
+   ``RestrictedEncoding.decodeCNF_encodeCNF,
+   ``bridge_resolution, ``php_unsat,
+   ``hakenLB_tree, ``no_polytime_res_solver]
 
 open Elab Command in
 /-- 監査を実行する。 -/

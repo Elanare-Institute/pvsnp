@@ -4,8 +4,8 @@ Lean 4 formalization of "Computational Directional Asymmetry: Dissolving the Cla
 
 - Japanese version of this README: [`README.ja.md`](README.ja.md)
 - Paper: Zenodo (insert the DOI of the new version)
-- Specification (in Japanese): [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md)
-- Verification report (in Japanese): [`VERIFICATION-v3.md`](VERIFICATION-v3.md); the v2 record is kept in [`VERIFICATION.md`](VERIFICATION.md)
+- Specifications (in Japanese): [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md), [`docs/lean4-spec-v4.md`](docs/lean4-spec-v4.md)
+- Verification reports (in Japanese): [`VERIFICATION-v3.md`](VERIFICATION-v3.md) and [`VERIFICATION-v4.md`](VERIFICATION-v4.md); the v2 record is kept in [`VERIFICATION.md`](VERIFICATION.md)
 
 > **Note.** This formalization does not prove P ≠ NP. Theorem 2 is proved as an implication whose hypotheses are Conjectures A and B together with the existence of an NP-complete relation. Conjectures A and B are unproven, and the project declares no custom axioms.
 
@@ -45,8 +45,8 @@ Besides the formalization itself, `lake build` runs the `sorry` and axiom audits
 ## Status
 
 - `lake build`: no errors, no warnings
-- `sorry`: none (106 declarations audited at the proof-term level)
-- Custom axioms: none (24 main theorems depend only on `propext`, `Classical.choice`, `Quot.sound`)
+- `sorry`: none (151 declarations audited at the proof-term level)
+- Custom axioms: none (32 main theorems depend only on `propext`, `Classical.choice`, `Quot.sound`)
 
 ```
 #print axioms thm2
@@ -67,6 +67,11 @@ Besides the formalization itself, `lake build` runs the `sorry` and axiom audits
 | §5.4 | Proposition 2: accumulation identity | `accumulation_identity` |
 | §6.3 | Restricting Conjecture B to NP-complete relations is essential | `v2_style_inconsistent` |
 | §6.4 | Theorem 2: Conjectures A and B imply P ≠ NP | `thm2` (residual asymmetry: opaque `residualAsym`) |
+| §6.5 | Definition 9: structural asymmetry relative to a proof system | `structAsym` |
+| §6.5 | Theorem 3: in the restricted settings the bridge is a theorem | `bridge_resolution` (proved uniformly in `ProofKind`, so it covers both DPLL-style and clause-learning settings) |
+| §6.5 | Theorem 4(i) (Haken 1985) | `HakenLB` (a hypothesis, not an axiom) |
+| §6.5 | Corollary 3: no DPLL-style or clause-learning solver is a polynomial-time total candidate solver | `no_polytime_res_solver` |
+| §6.5 | Soundness of resolution refutations (so the definitions are not vacuous) | `tree_sound`, `gen_sound` |
 
 ## Not formalized
 
@@ -74,6 +79,10 @@ Besides the formalization itself, `lake build` runs the `sorry` and axiom audits
 - The Cook–Levin theorem (the existence of an NP-complete relation is an explicit hypothesis of `thm2`)
 - Per-length degeneracy of optima (only the per-instance version is formalized)
 - Conjectures A and B themselves (hypotheses of Theorem 2, not axioms)
+- That DPLL and CDCL runs yield resolution refutations (Beame–Kautz–Sabharwal 2004). This is what the `extract` field of `ResSolver` assumes; it *is* the definition of the restricted settings.
+- Haken's lower bound itself (`HakenLB` is a hypothesis of Corollary 3)
+- The existence of an NP relation implementing SAT (`ImplementsSAT` is a hypothesis), so Theorem 3 and Corollary 3 are conditional on there being one
+- Completeness of resolution, Chvátal–Szemerédi (1988), and Buss (1987)
 
 ## Layout
 
@@ -91,6 +100,15 @@ DirectionalAsymmetry/
 │   ├── Spectrum.lean          -- asymmetry classes, spectrum, Proposition 1
 │   ├── Degeneracy.lean        -- degeneracy of per-instance optima
 │   └── Separation.lean        -- Conjectures A and B (as Props), Theorem 2, regression lemma
+├── Restricted/                -- paper §6.5: where the bridge is a theorem
+│   ├── Prop.lean              -- propositional logic: literals, clauses, CNF, satisfaction
+│   ├── Resolution.lean        -- resolution, tree-like and general refutations, soundness
+│   ├── Encoding.lean          -- encoding CNFs as binary strings, injectivity, length bounds
+│   ├── SATRel.lean            -- ImplementsSAT
+│   ├── Solvers.lean           -- ResSolver: the restricted settings
+│   ├── Bridge.lean            -- Definition 9 and Theorem 3
+│   ├── Pigeonhole.lean        -- the pigeonhole formulas and their unsatisfiability
+│   └── Corollary.lean         -- HakenLB and Corollary 3
 ├── Search/                    -- solvable region, local asymmetry, accumulation, structure-revealing
 │                                 transformations, and the bridge lemma (Bridge.lean)
 ├── Distribution.lean          -- asymmetry distributions
@@ -101,6 +119,7 @@ Test/
 ├── NoSorryInDefs.lean         -- sorry audit
 ├── NoCustomAxioms.lean        -- axiom audit of the main theorems
 ├── Exec.lean                  -- execution tests
+├── RestrictedExec.lean        -- execution tests for the §6.5 layer
 └── Phase0Inconsistency.lean   -- the v2 inconsistency proof (separate target)
 ```
 
@@ -114,4 +133,4 @@ lake build Legacy Phase0Test
 
 ## Deviations from the specification
 
-There are six minor deviations, and three places where proof hints in the specification were strengthened. None changes the mathematical content. See [`VERIFICATION-v3.md`](VERIFICATION-v3.md).
+For v3 there are six minor deviations and three strengthened proof hints; for v4, six more (mostly name clashes with Mathlib, and a decoder defined as the inverse image of an injective encoder rather than as a parser). None changes the mathematical content. See [`VERIFICATION-v3.md`](VERIFICATION-v3.md) and [`VERIFICATION-v4.md`](VERIFICATION-v4.md).

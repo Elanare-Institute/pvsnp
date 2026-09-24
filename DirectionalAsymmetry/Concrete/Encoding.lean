@@ -77,4 +77,31 @@ theorem enc_left_length_le (a b : BStr) : a.length ≤ (enc a b).length := by
 theorem enc_right_length_le (a b : BStr) : b.length ≤ (enc a b).length := by
   rw [enc_length]; omega
 
+/--
+`enc a b` は self-delimiting: 前方一致から第一成分と残りが一意に決まる。
+
+`a` の各ビットが `[true, c]` に展開され、区切りの `false` で `a` が
+終わるので、`enc a b ++ s` の先頭を読めば `a` が復元できる。
+-/
+theorem enc_append_inj : ∀ (a a' b b' s t : BStr),
+    enc a b ++ s = enc a' b' ++ t → a = a' ∧ b ++ s = b' ++ t := by
+  intro a
+  induction a with
+  | nil =>
+      intro a' b b' s t h
+      cases a' with
+      | nil => simpa [enc] using h
+      | cons c a'' => simp [enc] at h
+  | cons c a ih =>
+      intro a' b b' s t h
+      cases a' with
+      | nil => simp [enc] at h
+      | cons c' a'' =>
+          simp only [enc, List.flatMap_cons, List.cons_append, List.append_assoc,
+            List.cons.injEq, true_and] at h
+          obtain ⟨hcc, hrest⟩ := h
+          obtain ⟨ha, hb⟩ := ih a'' b b' s t (by
+            simpa [enc, List.append_assoc] using hrest)
+          exact ⟨by rw [hcc, ha], hb⟩
+
 end Encoding

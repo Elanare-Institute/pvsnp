@@ -4,8 +4,8 @@
 
 - English version of this README: [`README.md`](README.md)
 - 論文: Zenodo（新バージョンの DOI をここに記入）
-- 仕様: [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md)
-- 検証結果: [`VERIFICATION-v3.md`](VERIFICATION-v3.md)（v2 の記録は [`VERIFICATION.md`](VERIFICATION.md)）
+- 仕様: [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md)、[`docs/lean4-spec-v4.md`](docs/lean4-spec-v4.md)
+- 検証結果: [`VERIFICATION-v3.md`](VERIFICATION-v3.md)、[`VERIFICATION-v4.md`](VERIFICATION-v4.md)（v2 の記録は [`VERIFICATION.md`](VERIFICATION.md)）
 
 > **注意**: 本形式化は P≠NP を証明していない。定理2は、予想A・Bと「NP 完全な relation が存在すること」を**仮定とする含意**として証明している。予想A・B自体は未証明であり、プロジェクトは独自の `axiom` を一切宣言していない。
 
@@ -45,8 +45,8 @@ lake build
 ## 状態
 
 - `lake build`: エラー・警告ゼロ
-- `sorry`: ゼロ（106 宣言を証明項レベルで監査）
-- 独自の `axiom`: ゼロ（主要定理 24 件が `propext`, `Classical.choice`, `Quot.sound` のみに依存）
+- `sorry`: ゼロ（151 宣言を証明項レベルで監査）
+- 独自の `axiom`: ゼロ（主要定理 32 件が `propext`, `Classical.choice`, `Quot.sound` のみに依存）
 
 ```
 #print axioms thm2
@@ -67,6 +67,11 @@ lake build
 | §5.4 | 命題2（累積等式） | `accumulation_identity` |
 | §6.3 | 予想Bの NP 完全への限定が本質的であること | `v2_style_inconsistent` |
 | §6.4 | 定理2（予想A・B ⇒ P ≠ NP） | `thm2`（残差非対称性は opaque な `residualAsym`） |
+| §6.5 | 定義9（証明体系に相対的な構造的非対称性） | `structAsym` |
+| §6.5 | 定理3（制限された設定では「橋」が定理になる） | `bridge_resolution`（`ProofKind` に多相なので DPLL 型・節学習型の両方を覆う） |
+| §6.5 | 定理4(i)（Haken 1985） | `HakenLB`（公理ではなく仮定） |
+| §6.5 | 系3（DPLL型・節学習型は多項式時間の全候補ソルバーになれない） | `no_polytime_res_solver` |
+| §6.5 | resolution 反証の健全性（定義が空虚でないことの確認） | `tree_sound`, `gen_sound` |
 
 ## 形式化していないもの
 
@@ -74,6 +79,11 @@ lake build
 - Cook–Levin の定理（NP 完全な relation の存在は `thm2` の仮定として明示）
 - 長さごとの最適値の退化（インスタンスごとの版のみ形式化）
 - 予想A・B（定理2の仮定であり、公理ではない）
+- DPLL・CDCL の実行が resolution の反証を与えること（Beame–Kautz–Sabharwal 2004）。
+  これは `ResSolver` の `extract` フィールドが仮定しているもので、**制限された設定の定義そのもの**である
+- Haken の下界の証明（`HakenLB` は系3の仮定）
+- SAT を実装する NP relation の存在（`ImplementsSAT` は仮定）。したがって定理3・系3は条件つきの主張である
+- resolution の完全性、Chvátal–Szemerédi (1988)、Buss (1987)
 
 ## 構成
 
@@ -91,6 +101,15 @@ DirectionalAsymmetry/
 │   ├── Spectrum.lean          -- 非対称性クラス、スペクトル、命題1
 │   ├── Degeneracy.lean        -- インスタンスごとの最適値の退化
 │   └── Separation.lean        -- 予想A・B（Prop）、定理2、回帰テスト
+├── Restricted/                -- 論文 §6.5: 橋が定理になる場所
+│   ├── Prop.lean              -- 命題論理: リテラル・節・CNF・充足
+│   ├── Resolution.lean        -- resolution、木状/一般反証、健全性
+│   ├── Encoding.lean          -- CNF の二進列符号化、単射性、長さの評価
+│   ├── SATRel.lean            -- ImplementsSAT
+│   ├── Solvers.lean           -- ResSolver: 制限された設定
+│   ├── Bridge.lean            -- 定義9と定理3
+│   ├── Pigeonhole.lean        -- 鳩の巣原理の式と充足不能性
+│   └── Corollary.lean         -- HakenLB と系3
 ├── Search/                    -- 可解領域、局所非対称性、累積等式、構造開示変換、
 │                                 ブリッジ補題（Bridge.lean）
 ├── Distribution.lean          -- 非対称性の分布
@@ -101,6 +120,7 @@ Test/
 ├── NoSorryInDefs.lean         -- sorry 監査
 ├── NoCustomAxioms.lean        -- 主要定理の公理監査
 ├── Exec.lean                  -- 実行テスト
+├── RestrictedExec.lean        -- §6.5 層の実行テスト
 └── Phase0Inconsistency.lean   -- v2 の矛盾の実証（別ターゲット）
 ```
 
@@ -114,4 +134,4 @@ lake build Legacy Phase0Test
 
 ## 仕様からの逸脱
 
-軽微な逸脱が6件と、指示書の証明ヒントを強めた箇所が3件ある。いずれも数学的内容は変えていない。詳細は [`VERIFICATION-v3.md`](VERIFICATION-v3.md) を参照。
+v3 では軽微な逸脱が6件と証明ヒントを強めた箇所が3件、v4 ではさらに6件（多くは Mathlib との名前衝突と、復号をパーサではなく単射な符号化の逆像として定義したこと）。いずれも数学的内容は変えていない。詳細は [`VERIFICATION-v3.md`](VERIFICATION-v3.md) と [`VERIFICATION-v4.md`](VERIFICATION-v4.md) を参照。

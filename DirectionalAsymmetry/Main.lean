@@ -19,6 +19,7 @@ import DirectionalAsymmetry.Search.Accumulation
 import DirectionalAsymmetry.Search.MeaningTransformation
 import DirectionalAsymmetry.Search.Bridge
 import DirectionalAsymmetry.Distribution
+import DirectionalAsymmetry.Restricted.Corollary
 
 section Check
 
@@ -80,6 +81,26 @@ noncomputable example := @ConjA
 noncomputable example := @ConjB
 noncomputable example := @thm2
 noncomputable example := @v2_style_inconsistent
+
+-- v4: 制限された設定での「橋」（論文 §6.5）
+noncomputable example := @Lit
+noncomputable example := @CNF
+noncomputable example := @Satisfiable
+noncomputable example := @TreeRefutation
+noncomputable example := @GenRefutation
+noncomputable example := @tree_sound
+noncomputable example := @gen_sound
+noncomputable example := @tree_to_gen
+noncomputable example := @minSize
+noncomputable example := @ImplementsSAT
+noncomputable example := @ResSolver
+noncomputable example := @structAsym
+noncomputable example := @bridge_resolution
+noncomputable example := @php
+noncomputable example := @php_unsat
+noncomputable example := @HakenLB
+noncomputable example := @hakenLB_tree
+noncomputable example := @no_polytime_res_solver
 
 -- Layer 2
 noncomputable example := @PartialAssignment

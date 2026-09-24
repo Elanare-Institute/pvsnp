@@ -207,6 +207,49 @@ section MainLemmas
 variable {R : NPRel}
 
 /--
+検証時間の一様な log 上界。
+
+`M` の出力は `R.q |x|` 長に収まるので、`R.V` の入力
+`enc x (M x)` の長さは `|x|` の多項式。したがって
+`log T_V ≤ C(log |x| + 1)` が `x` によらない `C` で成り立つ。
+
+v4 の定理3でも使うので、独立した補題として切り出す。
+-/
+theorem vtime_log_bound (R : NPRel) (M : TCS R) :
+    ∃ C : ℕ, ∀ x : BStr, Nat.log 2 (vtime R x (M.out x)) ≤ C * (Nat.log 2 x.length + 1) := by
+  obtain ⟨cv, kv, hcv⟩ := R.V_poly
+  obtain ⟨cq, kq, hcq⟩ := R.q_poly
+  set TV : ℕ → ℕ := fun n => cv * (2 * n + 1 + cq * (n + 1) ^ kq + 1) ^ kv with hTV
+  have hTVpoly : PolyBound TV := by
+    refine PolyBound.mul (PolyBound.const cv) ?_
+    refine ⟨(4 + cq) ^ kv, (kq + 1) * kv, fun n => ?_⟩
+    have hge : n + 1 ≤ (n + 1) ^ (kq + 1) := by
+      have : (n + 1) ^ 1 ≤ (n + 1) ^ (kq + 1) :=
+        Nat.pow_le_pow_right (by omega) (by omega)
+      simpa using this
+    have hkq : (n + 1) ^ kq ≤ (n + 1) ^ (kq + 1) :=
+      Nat.pow_le_pow_right (by omega) (by omega)
+    have hbase : 2 * n + 1 + cq * (n + 1) ^ kq + 1 ≤ (4 + cq) * (n + 1) ^ (kq + 1) := by
+      have h2 : cq * (n + 1) ^ kq ≤ cq * (n + 1) ^ (kq + 1) := Nat.mul_le_mul_left _ hkq
+      nlinarith
+    calc (2 * n + 1 + cq * (n + 1) ^ kq + 1) ^ kv
+        ≤ ((4 + cq) * (n + 1) ^ (kq + 1)) ^ kv := Nat.pow_le_pow_left hbase _
+      _ = (4 + cq) ^ kv * (n + 1) ^ ((kq + 1) * kv) := by rw [Nat.mul_pow, ← pow_mul]
+  obtain ⟨C, hC⟩ := log_poly_le hTVpoly
+  refine ⟨C, fun x => ?_⟩
+  have hvle : vtime R x (M.out x) ≤ TV x.length := by
+    obtain ⟨y, t, he, ht⟩ := hcv (enc x (M.out x))
+    rw [vtime_eq he]
+    refine le_trans ht ?_
+    rw [hTV]
+    refine Nat.mul_le_mul_left _ (Nat.pow_le_pow_left ?_ _)
+    have h1 := M.out_short x
+    have h2 := hcq x.length
+    rw [enc_length]
+    omega
+  exact le_trans (Nat.log_mono_right hvle) (hC x.length)
+
+/--
 **普遍下界**（論文 §3.2）。
 
 `asym M x = log T_M − log T_V` で、`T_V` は入力 `enc x (M x)` 上の

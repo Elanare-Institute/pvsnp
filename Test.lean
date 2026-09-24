@@ -2,3 +2,4 @@
 import Test.NoSorryInDefs
 import Test.NoCustomAxioms
 import Test.Exec
+import Test.RestrictedExec

@@ -67,7 +67,28 @@ def mustBeSorryFree : List Name :=
    ``AsymmetryReducingTransform, ``StructureRevealingTransform,
    ``prefixPA, ``prefix_mem_solvable_iff,
    -- 分布
-   ``asymDistribution, ``profile_eq_sup]
+   ``asymDistribution, ``profile_eq_sup,
+   -- v4: 命題論理と resolution
+   ``Lit, ``Lit.compl, ``Clause, ``CNF, ``Satisfiable,
+   ``resStep, ``resStep_eval,
+   ``TreeDeriv, ``TreeDeriv.size, ``TreeRefutation, ``tree_sound,
+   ``GenRefutation, ``GenRefutation.size, ``gen_sound,
+   ``TreeDeriv.postorder, ``TreeDeriv.postorder_valid, ``tree_to_gen,
+   ``minTreeSize, ``minGenSize, ``minSize, ``minSize_le, ``refutation_sound,
+   -- v4: 符号化
+   ``RestrictedEncoding.encNat, ``RestrictedEncoding.encodeCNF,
+   ``RestrictedEncoding.decodeCNF, ``RestrictedEncoding.decodeCNF_encodeCNF,
+   ``RestrictedEncoding.encodeCNF_injective,
+   ``RestrictedEncoding.encodeCNF_length_le,
+   -- v4: 設定と定理3
+   ``ImplementsSAT, ``not_mem_lang_of_unsat,
+   ``ResSolver, ``ResSolver.minSize_le_time,
+   ``structAsym, ``bridge_resolution,
+   -- v4: 鳩の巣原理と系3
+   ``phVar, ``php, ``php_unsat, ``php_encode_length_le,
+   ``php_encode_polyBound, ``php_encode_length_ge,
+   ``HakenLB, ``hakenLB_tree, ``structAsym_php_ge,
+   ``log_lt_div, ``no_polytime_res_solver]
 
 open Elab Command in
 /-- 監査を実行する。 -/
