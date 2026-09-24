@@ -7,7 +7,8 @@ v2 指示書 §3.5 に対応（論文 §7.2 Def 7）。
 例: unit propagation（強制割当の露出）、CDCL（衝突構造の露出）、
 LP 緩和（分数構造の露出）。
 -/
-import DirectionalAsymmetry.SearchSpace
+import DirectionalAsymmetry.Search.SearchSpace
+import DirectionalAsymmetry.Concrete.Poly
 
 universe u
 
@@ -42,7 +43,7 @@ structure AsymmetryReducingTransform (n : ℕ) where
 （単一の `n` では「多項式」が意味を持たないので族として述べる。）
 -/
 def PolyTimeTransformFamily (τ : ∀ n : ℕ, AsymmetryReducingTransform n) : Prop :=
-  IsPolynomial (fun n => (τ n).costBound)
+  PolyBound (fun n => (τ n).costBound)
 
 /--
 変換がある点で非対称性を減少させること。
@@ -71,3 +72,10 @@ theorem reducesAsymmetry_id {n : ℕ} (φ : (Fin n → Bool) → Prop)
 theorem polyTimeTransformFamily_id :
     PolyTimeTransformFamily AsymmetryReducingTransform.id :=
   ⟨0, 0, fun n => by simp [AsymmetryReducingTransform.id]⟩
+
+/--
+定義7 の改名（論文 rev1）: "Structure-Revealing Transformation"。
+
+中身は `AsymmetryReducingTransform` と同一で、名前だけ論文 rev1 に合わせる。
+-/
+abbrev StructureRevealingTransform := AsymmetryReducingTransform

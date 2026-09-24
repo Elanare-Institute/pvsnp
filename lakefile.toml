@@ -11,3 +11,13 @@ name = "DirectionalAsymmetry"
 
 [[lean_lib]]
 name = "Test"
+
+# v2 抽象層と Phase 0 の矛盾実証。デフォルトのビルド対象には含めない。
+# 検証するには: lake build Legacy Phase0Test
+[[lean_lib]]
+name = "Legacy"
+
+[[lean_lib]]
+name = "Phase0Test"
+srcDir = "Test"
+roots = ["Phase0Inconsistency"]

@@ -6,7 +6,6 @@ v2 指示書 §3.1, §3.2 に対応（論文 §6.2 Def 5, §6.3 Def 6）。
 **解空間 (solution space) ではなく探索空間 (search space) を扱う**のが
 本論文の特徴。解空間は「何を見つけるか」、探索空間は「どう探すか」。
 -/
-import DirectionalAsymmetry.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Fintype.Pi

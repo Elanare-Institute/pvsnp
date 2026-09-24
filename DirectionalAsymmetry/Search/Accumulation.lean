@@ -9,7 +9,7 @@ v2 指示書 §3.3 に対応（論文 §6.4 Prop 2）。
 「指数的な探索時間 = 局所的な不確実性が深さ方向に累積したもの」
 という本論文の中心的洞察を形式化する。
 -/
-import DirectionalAsymmetry.SearchSpace
+import DirectionalAsymmetry.Search.SearchSpace
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 universe u

@@ -6,8 +6,8 @@ v2 指示書 §2.6, §2.7 に対応（論文 §3.3 Thm 1）。
 自前 `IsBigO` ではなく Mathlib の `Asymptotics.IsBigO` を使う。
 ノルム経由の定義なので非対称性が負値を取る問題が自動的に解決する。
 -/
-import DirectionalAsymmetry.Complexity
-import DirectionalAsymmetry.Auxiliary
+import Legacy.Complexity
+import Legacy.Auxiliary
 import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Order.Filter.AtTopBot.Defs
 

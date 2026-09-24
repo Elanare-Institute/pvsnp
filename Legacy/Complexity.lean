@@ -14,8 +14,8 @@ TCS は YES インスタンスで証拠を出すだけで **判定はしない**
 という**判定手続きを明示化**した `ClassP` を採用する。
 論文 §3.3 の iff に忠実な定式化である。
 -/
-import DirectionalAsymmetry.TotalCandidateSolver
-import DirectionalAsymmetry.Asymmetry
+import Legacy.TotalCandidateSolver
+import Legacy.Asymmetry
 
 universe u
 

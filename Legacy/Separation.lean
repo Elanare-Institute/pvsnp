@@ -7,9 +7,9 @@ v2 指示書 §4 に対応（論文 §7.3–7.5）。
 `conditional_p_ne_np` はこれらに依存する **条件付き** の結果であり、
 P≠NP の証明ではない。
 -/
-import DirectionalAsymmetry.Characterization
-import DirectionalAsymmetry.SearchSpace
-import DirectionalAsymmetry.MeaningTransformation
+import Legacy.Characterization
+import DirectionalAsymmetry.Search.SearchSpace
+import DirectionalAsymmetry.Search.MeaningTransformation
 import Mathlib.Order.Filter.AtTopBot.Defs
 
 open Asymptotics Filter

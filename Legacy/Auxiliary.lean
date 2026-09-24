@@ -8,7 +8,7 @@ v1 の `Real.log` 版をそのまま流用するのではなく、
 ℕ 上で直接証明した版を主役にする（ℕ のままの方が素直）。
 `Real.log` 版も v1 から引き継いで併置する。
 -/
-import DirectionalAsymmetry.Basic
+import Legacy.Basic
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Data.Nat.Log

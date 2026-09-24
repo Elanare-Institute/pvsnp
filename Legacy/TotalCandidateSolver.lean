@@ -8,7 +8,7 @@ v2 の中心的な設計変更: v1 では `Algorithm`（`time : List α → ℕ`
 TCS は「入力から候補証拠を出す全域関数」なので、検証側の証拠が
 `M.solve x` に一意に定まり、この不整合が解消する。
 -/
-import DirectionalAsymmetry.Basic
+import Legacy.Basic
 
 universe u
 

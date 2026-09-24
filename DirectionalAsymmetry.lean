@@ -1,12 +1,13 @@
 /-
-# DirectionalAsymmetry
+# DirectionalAsymmetry (v3: 具体コストモデル版)
 
-P vs NP を「方向非対称性」の枠組みで再定式化する論文の
-Layer 1–3 の Lean 4 形式化（指示書 v2）。
+論文 "Computational Directional Asymmetry" rev1 の Lean 4 形式化。
 
-Layer 1 の目的は定義の整合性確認とステートメントの型チェックであり、
-P≠NP に関する数学的主張を支持するものではない。
-Layer 3 の Conjecture A/B は `axiom` として宣言されており、
-`conditional_p_ne_np` はそれらに依存する条件付きの結果である。
+v3 の三原則:
+- (P1) 時間は実行から導出する（`Prog` の深い埋め込み + `Eval` のコスト意味論）
+- (P2) 最適性は一様に扱う（`profile` は長さ n の最悪ケース）
+- (P3) 独自の `axiom` をゼロにする（予想A・Bは `Prop` として仮定に明示）
+
+`thm2` は予想A・Bを**仮定とする含意**であり、P≠NP の証明ではない。
 -/
 import DirectionalAsymmetry.Main

@@ -10,7 +10,7 @@ v1 からの変更: `solveCost` / `verifyCost` を別引数で取るのをやめ
 一意に定まるため、v1 で必要だった `verifyCostOf`（証拠上の最小値を取る
 恣意的な選択）が不要になった。
 -/
-import DirectionalAsymmetry.TotalCandidateSolver
+import Legacy.TotalCandidateSolver
 import Mathlib.Data.Int.Log
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed

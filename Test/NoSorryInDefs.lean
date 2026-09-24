@@ -1,11 +1,10 @@
 /-
-# 回帰テスト: 定義層に sorry が混入していないことの検査
+# 回帰テスト: sorry が混入していないことの検査
 
-Layer 1 の最低要件は「`def`/`structure` が sorry なしで型チェックを通ること」
-（指示書 §5.3, §6）。テキスト上の grep ではなく `#print axioms` 相当の
-検査を行い、証明項レベルで `sorryAx` 非依存であることを確認する。
+テキスト上の grep ではなく `#print axioms` 相当の検査を行い、
+証明項レベルで `sorryAx` 非依存であることを確認する。
 
-`sorryAx` に依存する宣言が下の第1リストに現れると **ビルドが失敗する**。
+`sorryAx` に依存する宣言が下のリストに現れると **ビルドが失敗する**。
 -/
 import DirectionalAsymmetry
 
@@ -17,93 +16,70 @@ namespace DirectionalAsymmetry.Test
 def dependsOnSorry [Monad m] [MonadEnv m] (n : Name) : m Bool := do
   return (← collectAxioms n).contains ``sorryAx
 
-/-- sorry なしであるべき宣言（定義層 + 証明済み定理）。 -/
+/-- v3 の全宣言（sorry なしであるべき）。 -/
 def mustBeSorryFree : List Name :=
-  [-- Layer 1 定義層
-   ``Language, ``IsPolynomial,
-   ``inputsOfSize, ``inputsOfSize_nonempty, ``mem_inputsOfSize,
-   ``witnessesUpTo, ``mem_witnessesUpTo, ``witnessesUpTo_nonempty,
-   ``inputsOfSizePairs, ``inputsOfSizePairs_nonempty,
-   ``NPRelation, ``NPRelation.language, ``TotalCandidateSolver,
-   ``NPRelation.bruteForceSolver,
-   ``directionalAsymmetry, ``directionalAsymmetryReal,
-   ``maxAsymmetry, ``maxAsymmetryAbs, ``optimalAsymmetry,
-   ``worstCaseVerifyOn, ``worstCaseTime,
-   ``TotalCandidateSolver.decide, ``ClassP, ``ClassNP,
-   -- Layer 1 証明済み定理
-   ``TotalCandidateSolver.decide_iff,
-   ``optimalAsymmetry_le,
-   ``maxAsymmetry_le_log_worstCaseTime,
-   ``neg_log_le_maxAsymmetry,
-   ``maxAsymmetryAbs_le,
-   ``worstCaseVerifyOn_poly,
-   ``p_sub_np,
-   ``log_bounded_implies_in_p,
-   ``asymmetry_log_bounded_of_polys,
-   ``p_eq_np_implies_log_bounded,
-   ``p_ne_np_iff_superlog_asymmetry,
-   -- 補助補題（v1 から移植 + 新規）
-   ``Nat.log_pow_le,
-   ``natLog_polynomial_is_O_log,
-   ``natLog_diff_polynomials_is_O_log,
-   ``natAbs_log_diff_is_O_log,
-   ``log_exponential_is_linear,
-   ``log_polynomial_is_O_log,
-   ``log_diff_polynomials_is_O_log,
-   -- Layer 2 定義層
-   ``PartialAssignment, ``solvableRegion, ``extensions,
-   ``extensions_finite, ``extensions_inter_solvable_finite,
-   ``localAsymmetry, ``solvePreservingRatio,
-   ``_root_.SearchPath, ``structuralAsymmetry,
-   ``AsymmetryReducingTransform, ``ReducesAsymmetry,
-   ``PolyTimeTransformFamily,
-   ``asymmetryDistribution, ``statSup, ``statMean, ``statTail,
-   ``problemAsymmetry, ``asymmetrySpectrum,
-   -- Layer 2 証明済み定理
-   ``accumulation_identity,
+  [-- Phase A: 符号化
+   ``BStr, ``Encoding.enc, ``Encoding.dec,
+   ``Encoding.dec_enc, ``Encoding.enc_length,
+   ``Encoding.dec_fst_length_le, ``Encoding.dec_snd_length_le,
+   -- Phase A: プログラムとコスト意味論
+   ``Prog, ``Prog.Eval,
+   ``Prog.Eval.deterministic, ``Prog.Eval.cost_pos, ``Prog.Eval.size_le,
+   ``Prog.Eval.comp_inv, ``Prog.Eval.pair_inv, ``Prog.Eval.ite_inv,
+   ``Prog.Eval.loop_inv,
+   -- Phase A: インタプリタ
+   ``Prog.run, ``Prog.run_sound,
+   -- Phase B: 多項式と計算量クラス
+   ``PolyBound, ``PolyBound.add, ``PolyBound.mul, ``PolyBound.comp,
+   ``PolyTime, ``Decides, ``ClassP, ``NPRel, ``NPRel.lang, ``ClassNP,
+   ``PeqNP, ``Reduces, ``IsNPComplete,
+   ``polyTime_comp, ``polyTime_pair, ``polyTime_ite,
+   ``p_sub_np, ``inP_of_reduces, ``trivialRel,
+   -- Phase C: TCS と非対称性
+   ``TCS, ``TCS.out, ``TCS.time, ``vtime, ``asym, ``profile, ``LogBounded,
+   ``inputsOfSize, ``mem_inputsOfSize, ``inputsOfSize_nonempty,
+   ``log_poly_le, ``lt_two_pow_succ_of_log_le,
+   ``asym_lower, ``logBounded_of_polyTime,
+   ``polyTime_of_logBounded, ``lang_inP_of_polyTime_tcs,
+   -- Phase D: prefix 探索と定理1
+   ``prefRel, ``prefRel_mem_iff,
+   ``initS, ``ext, ``notP, ``prefixSearch,
+   ``body_preserves, ``loop_reaches, ``loop_reaches_cost,
+   ``prefixSearch_tcs, ``prefixSearch_polyTime,
+   ``thm1_a_to_b, ``thm1_b_to_a, ``thm1_c_to_a,
+   ``thm1_a_iff_b, ``thm1_a_iff_c,
+   ``cor1, ``cor1', ``cor2,
+   -- Phase E: スペクトル
+   ``Profile, ``AsymClass, ``cls, ``zeroClass,
+   ``achievable, ``classOf, ``asymSpectrum,
+   ``zeroClass_le, ``cls_le_zero_iff, ``cls_eq_zero_iff,
+   ``classOf_eq_some_zero_iff, ``prop1,
+   -- Phase F: 退化（ボーナス）
+   ``pointwise_degenerate,
+   -- Phase G: 分離
+   ``residualAsym, ``Unbounded, ``ConjA, ``ConjB,
+   ``not_unbounded_of_logBounded, ``thm2,
+   ``ConjB_allRel, ``trivialTCS, ``v2_style_inconsistent,
+   -- Layer 2（維持）
+   ``PartialAssignment, ``solvableRegion, ``localAsymmetry,
+   ``structuralAsymmetry, ``accumulation_identity,
    ``structuralAsymmetry_eq_log_prod,
-   ``reducesAsymmetry_id,
-   ``polyTimeTransformFamily_id,
-   -- Layer 3: A+B からの導出自体は sorry なし
-   ``Superlogarithmic,
-   ``not_isBigO_of_superlogarithmic]
-
-/--
-`axiom` である Conjecture A/B に依存する宣言。
-
-`sorryAx` ではなく `conjecture_A` / `conjecture_B` に依存する。
-これは「未証明の予想を明示的に仮定している」ことの表明であり、
-`sorry` による誤魔化しとは区別される。
--/
-def dependsOnConjectures : List Name :=
-  [``conditional_p_ne_np]
-
-/-- 現時点で未証明の定理（今は空。将来 sorry を置いたらここに追加）。 -/
-def knownSorry : List Name := []
+   ``AsymmetryReducingTransform, ``StructureRevealingTransform,
+   ``prefixPA, ``prefix_mem_solvable_iff,
+   -- 分布
+   ``asymDistribution, ``profile_eq_sup]
 
 open Elab Command in
-/-- 上記2リストを検査し、違反があればビルドを失敗させる。 -/
-elab "#audit_sorry" : command => do
-  let mut errs : Array String := #[]
+/-- 監査を実行する。 -/
+elab "run_sorry_audit" : command => do
+  let mut bad : List Name := []
   for n in mustBeSorryFree do
-    if ← dependsOnSorry n then
-      errs := errs.push s!"{n} が sorryAx に依存している"
-  for n in knownSorry do
-    unless ← dependsOnSorry n do
-      errs := errs.push s!"{n} に sorryAx がない（証明できたなら期待リストを更新せよ）"
-  -- Conjecture 依存の宣言: sorryAx は無いが conjecture_A/B には依存すべき
-  for n in dependsOnConjectures do
-    if ← dependsOnSorry n then
-      errs := errs.push s!"{n} が sorryAx に依存している（axiom のみのはず）"
-    let ax ← collectAxioms n
-    unless ax.contains ``conjecture_A && ax.contains ``conjecture_B do
-      errs := errs.push s!"{n} が conjecture_A/B に依存していない"
-  unless errs.isEmpty do
-    throwError "sorry 監査に失敗:\n{errs.toList}"
-  logInfo s!"sorry 監査 OK: {mustBeSorryFree.length} 件が sorry-free, \
-{dependsOnConjectures.length} 件が Conjecture A/B 依存, \
-{knownSorry.length} 件が既知の未証明"
+    if ← liftTermElabM (dependsOnSorry n) then
+      bad := n :: bad
+  if !bad.isEmpty then
+    throwError "sorry に依存する宣言がある: {bad}"
+  logInfo m!"sorry 監査 OK: {mustBeSorryFree.length} 件がすべて sorry-free"
 
-#audit_sorry
+run_sorry_audit
 
 end DirectionalAsymmetry.Test
