@@ -1,9 +1,9 @@
-# pvsnp — Computational Directional Asymmetry (Lean 4 formalization, v3)
+# pvsnp — Computational Directional Asymmetry (Lean 4 formalization)
 
 Lean 4 formalization of "Computational Directional Asymmetry: Dissolving the Classical Question Behind P vs NP" by Franny Philos Sophia (revision 1).
 
 - Japanese version of this README: [`README.ja.md`](README.ja.md)
-- Paper: Zenodo (insert the DOI of the new version)
+- Paper: <https://doi.org/10.5281/zenodo.22939703>
 - Specifications (in Japanese): [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md), [`docs/lean4-spec-v4.md`](docs/lean4-spec-v4.md)
 - Verification reports (in Japanese): [`VERIFICATION-v3.md`](VERIFICATION-v3.md) and [`VERIFICATION-v4.md`](VERIFICATION-v4.md); the v2 record is kept in [`VERIFICATION.md`](VERIFICATION.md)
 
