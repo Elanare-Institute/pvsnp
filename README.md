@@ -1,67 +1,117 @@
-# pvsnp — Directional Asymmetry Reformulation (Layer 1–3)
+# pvsnp — Computational Directional Asymmetry (Lean 4 formalization, v3)
 
-P vs NP 問題を「方向非対称性」(Directional Asymmetry) の枠組みで再定式化する
-論文の Lean 4 形式化。
+Lean 4 formalization of "Computational Directional Asymmetry: Dissolving the Classical Question Behind P vs NP" by Franny Philos Sophia (revision 1).
 
-- 仕様: [`docs/lean4-layer1-3-spec-v2.md`](docs/lean4-layer1-3-spec-v2.md)
-- 論文のアイデア: [`docs/00_ideas (6).md`](docs/00_ideas%20(6).md)
-- 論文の構成: [`docs/03_structure (2).md`](docs/03_structure%20(2).md)
-- 検証結果: [`VERIFICATION.md`](VERIFICATION.md)
+- Japanese version of this README: [`README.ja.md`](README.ja.md)
+- Paper: Zenodo (insert the DOI of the new version)
+- Specification (in Japanese): [`docs/lean4-spec-v3.md`](docs/lean4-spec-v3.md)
+- Verification report (in Japanese): [`VERIFICATION-v3.md`](VERIFICATION-v3.md); the v2 record is kept in [`VERIFICATION.md`](VERIFICATION.md)
 
-> **注意**: 本形式化は **P≠NP を証明していない**。
-> `conditional_p_ne_np` は Conjecture A/B を `axiom` として仮定した
-> **条件付き**の結果であり、A/B 自体は未証明の予想である。
-> `#print axioms` がこの依存関係を機械的に可視化している。
+> **Note.** This formalization does not prove P ≠ NP. Theorem 2 is proved as an implication whose hypotheses are Conjectures A and B together with the existence of an NP-complete relation. Conjectures A and B are unproven, and the project declares no custom axioms.
 
-## ビルド
+## Corrections relative to v2 (important)
+
+Version 2, which corresponds to the previous README and to the first preprint of the paper, had three problems.
+
+1. **An inconsistent axiom system.** v2 declared Conjectures A and B as axioms, with Conjecture B quantified over all NP relations rather than over NP-complete ones. That axiom system is inconsistent: `False` is derivable from a trivial relation (empty language, constant-output solver), as verified in Lean. The v2 theorem `conditional_p_ne_np` therefore held vacuously. The previous README's statement that `#print axioms conditional_p_ne_np` depends only on `conjecture_A` and `conjecture_B` carries no verificational content and is withdrawn.
+2. **Running time as an abstract field.** A solver's running time was a number unrelated to its execution, so a solver could be transported from one witnessing relation to another at no cost. The search construction of Theorem 1 was therefore not verified.
+3. **Degenerate per-instance optima.** `optimalAsymmetry` was a per-instance infimum, which a solver with a hard-coded answer drives to O(log n) on every instance.
+
+v3 resolves all three. That Conjecture B must be restricted to NP-complete relations is proved formally as the regression lemma `v2_style_inconsistent : ConjA → ConjB_allRel → False`.
+
+## Computational model
+
+Algorithms are represented as syntax: programs in a small language over binary strings, with pairing, head and tail operations, conditionals, and loops. Running time is derived from a big-step cost semantics `Eval`; it is never stored as a field. Every primitive costs at least the lengths of its input and output, so data cannot grow faster than running time.
+
+The search procedure actually runs:
+
+```lean
+run 200 (prefixSearch D0 V0) [true, false] = some ([true], 168)   -- checked by rfl
+```
+
+**Unformalized assumption:** the programming language is polynomially equivalent to Turing machines. This is the standard invariance assumption of complexity theory (paper, §8.4).
+
+## Building
 
 ```bash
-lake exe cache get   # Mathlib のビルド済みキャッシュを取得（初回のみ、必須）
+lake exe cache get   # fetch prebuilt Mathlib (first time only; required)
 lake build
 ```
 
-環境: Lean 4 **v4.33.1** / Mathlib **v4.33.1**。
+Environment: Lean 4 **v4.33.1** / Mathlib **v4.33.1**.
 
-`lake build` は形式化本体に加え、**sorry 監査の回帰テスト**も実行する。
+Besides the formalization itself, `lake build` runs the `sorry` and axiom audits and the execution tests.
 
-## 状態
+## Status
 
-**プロジェクト全体で `sorry` はゼロ。** Layer 1/2/3 の完了判定をすべて充足。
-
-| Layer | 内容 | 状態 |
-|---|---|---|
-| 1 | Def 1–3', ClassP/ClassNP, Thm 1 | **全定理を証明** |
-| 2 | Def 4–7, Prop 2（累積等式） | **定義 + 全定理を証明** |
-| 3 | Conj A/B (axiom), Thm 2 | **A+B からの導出を証明** |
+- `lake build`: no errors, no warnings
+- `sorry`: none (106 declarations audited at the proof-term level)
+- Custom axioms: none (24 main theorems depend only on `propext`, `Classical.choice`, `Quot.sound`)
 
 ```
-#print axioms conditional_p_ne_np
--- [conjecture_A, conjecture_B, propext, Classical.choice, Quot.sound]
+#print axioms thm2
+-- [propext, Classical.choice, Quot.sound]
 ```
 
-Layer 1 の定理は conjecture に依存しない（無条件の結果）。
+## Main results (correspondence with paper revision 1)
 
-## 構成
-
-| ファイル | 内容 | 論文 |
+| Paper (rev. 1) | Content | Lean |
 |---|---|---|
-| `Basic.lean` | 多項式・Language・サイズ n の入力集合 | §2 |
-| `TotalCandidateSolver.lean` | Def 1–2: NP relation, TCS | §2, §3.1 |
-| `Asymmetry.lean` | Def 3–3': A_M(x), A*(x) | §3.2 |
-| `Complexity.lean` | ClassP, ClassNP | §3.3 |
-| `Characterization.lean` | Thm 1, P ⊆ NP | §3.3 |
-| `Distribution.lean` | Def 4: 分布・統計量・スペクトル | §4 |
-| `SearchSpace.lean` | Def 5–6: 可解領域, 局所非対称性 | §6.2–6.3 |
-| `Accumulation.lean` | Prop 2: 累積等式 | §6.4 |
-| `MeaningTransformation.lean` | Def 7: 意味変換 | §7.2 |
-| `Separation.lean` | Conj A/B, Thm 2 | §7.3–7.5 |
-| `Auxiliary.lean` | 補助補題（対数・多項式） | — |
-| `Test/NoSorryInDefs.lean` | sorry 監査の回帰テスト | — |
+| §3.2 | Universal lower bound g_M(n) ≥ −O(log n) | `asym_lower` |
+| §3.2 | Degeneracy of per-instance optima | `pointwise_degenerate` |
+| §3.3 | Prefix language Pref_R and the search procedure built on it | `prefRel`, `prefixSearch_tcs`, `prefixSearch_polyTime` |
+| §3.3 | Theorem 1: (a) ⇔ (b), and (a) ⇔ (c) for NP-complete R | `thm1_a_iff_b`, `thm1_a_iff_c` |
+| §3.3 | Corollaries 1 and 2 | `cor1`, `cor1'`, `cor2` |
+| §3.3 | For SAT-type relations, Pref coincides with the solvable region on prefix-shaped partial assignments | `prefix_mem_solvable_iff` |
+| §4.3 | Proposition 1: P = NP ⇔ Σ_NP = {[0]} | `prop1` (spectrum: `asymSpectrum`) |
+| §5.4 | Proposition 2: accumulation identity | `accumulation_identity` |
+| §6.3 | Restricting Conjecture B to NP-complete relations is essential | `v2_style_inconsistent` |
+| §6.4 | Theorem 2: Conjectures A and B imply P ≠ NP | `thm2` (residual asymmetry: opaque `residualAsym`) |
 
-## 仕様からの主な逸脱
+## Not formalized
 
-v2 仕様のまま実装すると **Thm 1 (⟹) が反例を持つ**ことが判明したため、
-`TotalCandidateSolver` に `solve_short`（出力長の多項式有界性）を追加した。
-詳細は [`VERIFICATION.md` §3.1](VERIFICATION.md) を参照。
+- Polynomial equivalence of the programming language with Turing machines (the assumption above)
+- The Cook–Levin theorem (the existence of an NP-complete relation is an explicit hypothesis of `thm2`)
+- Per-length degeneracy of optima (only the per-instance version is formalized)
+- Conjectures A and B themselves (hypotheses of Theorem 2, not axioms)
 
-その他、`ClassP` への判定手続きの明示、relation 移送の補完など計 10 件。
+## Layout
+
+```
+DirectionalAsymmetry/
+├── Concrete/
+│   ├── Encoding.lean          -- binary strings and pair encoding
+│   ├── Prog.lean              -- programming language and cost semantics Eval
+│   ├── Interp.lean            -- fuel-bounded interpreter run and its soundness
+│   ├── Poly.lean              -- polynomial bounds and closure properties
+│   ├── Classes.lean           -- PolyTime, ClassP, NPRel, ClassNP, PeqNP, IsNPComplete
+│   ├── TCS.lean               -- total candidate solvers, asymmetry, profiles, lower bound
+│   ├── Prefix.lean            -- prefix language and the search procedure
+│   ├── Characterization.lean  -- Theorem 1, Corollaries 1 and 2
+│   ├── Spectrum.lean          -- asymmetry classes, spectrum, Proposition 1
+│   ├── Degeneracy.lean        -- degeneracy of per-instance optima
+│   └── Separation.lean        -- Conjectures A and B (as Props), Theorem 2, regression lemma
+├── Search/                    -- solvable region, local asymmetry, accumulation, structure-revealing
+│                                 transformations, and the bridge lemma (Bridge.lean)
+├── Distribution.lean          -- asymmetry distributions
+└── Main.lean
+Legacy/                        -- v2 abstract layer (separate target; kept as the record of the
+                                  inconsistency, not part of the default build)
+Test/
+├── NoSorryInDefs.lean         -- sorry audit
+├── NoCustomAxioms.lean        -- axiom audit of the main theorems
+├── Exec.lean                  -- execution tests
+└── Phase0Inconsistency.lean   -- the v2 inconsistency proof (separate target)
+```
+
+To reproduce the v2 inconsistency result:
+
+```bash
+lake build Legacy Phase0Test
+# 'v2_axioms_inconsistent' depends on axioms:
+#   [conjecture_A, conjecture_B, propext, Classical.choice, Quot.sound]
+```
+
+## Deviations from the specification
+
+There are six minor deviations, and three places where proof hints in the specification were strengthened. None changes the mathematical content. See [`VERIFICATION-v3.md`](VERIFICATION-v3.md).
